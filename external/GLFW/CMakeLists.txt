@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 
 project(GLFW C)
 
@@ -7,7 +7,6 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 if (NOT CMAKE_VERSION VERSION_LESS "3.0")
     # Until all major package systems have moved to CMake 3,
     # we stick with the older INSTALL_NAME_DIR mechanism
-    cmake_policy(SET CMP0042 OLD)
 endif()
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.1")
@@ -364,7 +363,11 @@ configure_file(src/glfw3.pc.in src/glfw3.pc @ONLY)
 # Add subdirectories
 #--------------------------------------------------------------------
 add_subdirectory(src)
-
+add_custom_target(RunVulkanGrass
+    COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/vulkan_grass_rendering.exe"
+    DEPENDS vulkan_grass_rendering
+    WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+)
 if (GLFW_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
