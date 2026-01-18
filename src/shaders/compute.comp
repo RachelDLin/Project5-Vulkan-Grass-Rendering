@@ -62,6 +62,51 @@ bool inViewFrustum(vec3 pos) {
 	return inBounds(ndcPos.x, homogCoord) && inBounds(ndcPos.y, homogCoord);
 }
 
+// Simple hash function to generate pseudo-random float in [0,1]
+float rand(uint seed) {
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
+    return float(seed & 0xFFFFFFFu) / float(0x10000000u);
+}
+
+float fade(float t) {
+    return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+}
+
+vec2 hash2(vec2 p) {
+    p = vec2(
+        dot(p, vec2(127.1, 311.7)),
+        dot(p, vec2(269.5, 183.3))
+    );
+    return normalize(-1.0 + 2.0 * fract(sin(p) * 43758.5453123));
+}
+
+float perlin(vec2 p) {
+    vec2 i = floor(p);   // grid cell
+    vec2 f = fract(p);   // local position
+
+    vec2 g00 = hash2(i + vec2(0, 0));
+    vec2 g10 = hash2(i + vec2(1, 0));
+    vec2 g01 = hash2(i + vec2(0, 1));
+    vec2 g11 = hash2(i + vec2(1, 1));
+
+    float d00 = dot(g00, f - vec2(0, 0));
+    float d10 = dot(g10, f - vec2(1, 0));
+    float d01 = dot(g01, f - vec2(0, 1));
+    float d11 = dot(g11, f - vec2(1, 1));
+
+    vec2 u = vec2(fade(f.x), fade(f.y));
+
+    return mix(
+        mix(d00, d10, u.x),
+        mix(d01, d11, u.x),
+        u.y
+    );
+}
+
 void main() {
 	uint idx = gl_GlobalInvocationID.x;
 
@@ -111,12 +156,19 @@ void main() {
 
 	#if ENABLE_WIND
 		// wind
+		float randNum = rand(idx + uint(totalTime * 1000.0));
+		float t0 = perlin(vec2(pos0.x, pos0.z));
+		float t1 = perlin(vec2(pos1.x, pos1.z));
+		float t2 = perlin(vec2(pos2.x, pos2.z));
+
 		vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) + 
 								vec3(0.25) + 
-								vec3(0.53 * sin(2.3 * totalTime) + 0.27 * sin(5.7 * totalTime + 0.87), 
+								vec3(0.53 * sin(2.3 * totalTime) + 0.27 * (1.0 + t0 * 0.1) * sin(5.7 * totalTime + 0.87), 
 										0, 
-										0.38 * sin(0.5 * totalTime) + 0.27 * sin(0.34 * totalTime + 0.13)));
-		float windStrength = 5.0;
+										0.38 * sin(0.5 * totalTime) + 0.27 * (1.0 + t2 * 0.1) * sin(1.34 * totalTime + 0.13)
+								)
+						);
+		float windStrength = 5.0 + (t1 * randNum);
 		float dirAlignment = 1.0 - abs(dot(windDir, normalize(pos2 - pos0)));
 		float heightRatio = dot(pos2 - pos0, uDir) / height;
 		float alignment = heightRatio * dirAlignment;
