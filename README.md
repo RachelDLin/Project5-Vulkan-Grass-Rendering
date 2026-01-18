@@ -1,7 +1,8 @@
 Vulkan Grass Rendering
 ==================================
 
-*
+**University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 5**
+
 Rachel Lin
 
 * [LinkedIn](https://www.linkedin.com/in/rachel-lin-452834213/)
