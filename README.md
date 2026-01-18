@@ -28,3 +28,25 @@ Tested on: Windows 11, 12th Gen Intel(R) Core(TM) i7-12700H @ 2.30GHz, NVIDIA Ge
 
 # Overview
 This project is an implementation of the paper [Responsive Real-Time Grass Rendering for General 3D Scenes](https://www.cg.tuwien.ac.at/research/publications/2017/JAHRMANN-2017-RRTG/JAHRMANN-2017-RRTG-draft.pdf) by Klemens Jahrmann and Michael Wimmer. 
+
+# Features
+
+## Forces
+
+### Gravity
+
+### Recovery
+
+### Wind
+
+
+## Culling
+
+### Orientation Culling
+
+### View-Frustum Culling
+
+### Distance Culling
+
+
+
