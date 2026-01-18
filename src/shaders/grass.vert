@@ -23,7 +23,7 @@ out gl_PerVertex {
 void main() {
 	// TODO: Write gl_Position and any other shader outputs
     // transform everything from object space to world space
-    gl_Position = model * vec4(in_v0.xyz, 1.0);
+    gl_Position = vec4((model * vec4(in_v0.xyz, 1.0)).xyz, in_v0.w);
     out_v1 = vec4((model * vec4(in_v1.xyz, 1.0)).xyz, in_v1.w);
     out_v2 = vec4((model * vec4(in_v2.xyz, 1.0)).xyz, in_v2.w);
     out_up = vec4((model * vec4(in_up.xyz, 1.0)).xyz, in_up.w);

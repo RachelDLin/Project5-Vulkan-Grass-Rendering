@@ -27,5 +27,5 @@ void main() {
 
     vec3 col = col2 * (diffuse * (1.0 - ambient) + ambient);
 
-    outColor = vec4(1.0);
+    outColor = vec4(col, 1.0);
 }
