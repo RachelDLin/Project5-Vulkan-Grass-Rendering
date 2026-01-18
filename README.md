@@ -36,6 +36,9 @@ This project is an implementation of the paper [Responsive Real-Time Grass Rende
 
 ## Forces
 
+| Gravity | Wind	| 
+| --------- | --------- |
+| <img src="img/gravity.gif" width="100%"> | <img src="img/wind.gif" width="100%"> | 
 
 
 ### Gravity
