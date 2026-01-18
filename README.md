@@ -50,6 +50,11 @@ This project is an implementation of the paper [Responsive Real-Time Grass Rende
 
 ## Culling
 
+| Orientation Culling | View Frustum Culling	| Distance Culling	|
+| --------- | --------- | --------- |
+| <img src="img/orientation_culling.gif" width="100%"> | <img src="img/viewfrustum_culling.gif" width="100%"> | <img src="img/distance_culling.gif" width="100%"> |
+
+
 ### Orientation Culling
 
 ### View-Frustum Culling
