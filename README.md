@@ -3,10 +3,50 @@ Vulkan Grass Rendering
 
 **University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 5**
 
-* (TODO) YOUR NAME HERE
-* Tested on: (TODO) Windows 22, i7-2222 @ 2.22GHz 22GB, GTX 222 222MB (Moore 2222 Lab)
+Rachel Lin
 
-### (TODO: Your README)
+* [LinkedIn](https://www.linkedin.com/in/rachel-lin-452834213/)
+* [personal website](https://www.artstation.com/rachellin4)
+* [Instagram](https://www.instagram.com/lotus_crescent/)
 
-*DO NOT* leave the README to the last minute! It is a crucial part of the
-project, and we will not be able to grade you without a good README.
+Tested on: Windows 11, 12th Gen Intel(R) Core(TM) i7-12700H @ 2.30GHz, NVIDIA GeForce RTX 3080 Laptop GPU (16 GB)
+
+### Features
+* Simulating Forces
+  * Gravity
+  * Recovery
+  * Wind
+* Tesselation
+* Simple lambertian shading
+* Culling
+  * Orientation culling
+  * View-frustum culling
+  * Distance culling
+
+### References
+* [Responsive Real-Time Grass Rendering for General 3D Scenes](https://www.cg.tuwien.ac.at/research/publications/2017/JAHRMANN-2017-RRTG/JAHRMANN-2017-RRTG-draft.pdf)
+
+# Overview
+This project is an implementation of the paper [Responsive Real-Time Grass Rendering for General 3D Scenes](https://www.cg.tuwien.ac.at/research/publications/2017/JAHRMANN-2017-RRTG/JAHRMANN-2017-RRTG-draft.pdf) by Klemens Jahrmann and Michael Wimmer. 
+
+# Features
+
+## Forces
+
+### Gravity
+
+### Recovery
+
+### Wind
+
+
+## Culling
+
+### Orientation Culling
+
+### View-Frustum Culling
+
+### Distance Culling
+
+
+
