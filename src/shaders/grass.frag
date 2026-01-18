@@ -21,11 +21,12 @@ void main() {
     vec3 lightDir = normalize(vec3(0.3, 1.0, 0.6));
     vec3 col1 = vec3(0.49, 0.63, 0.0);
     vec3 col2 = vec3(0.27, 0.56, 0.13);
+    vec3 baseCol = (1.0 - in_uv.y) * col2 + in_uv.y * col1;
 
     float diffuse = max(dot(in_nor, lightDir), 0.0);
     float ambient = 0.2;
 
-    vec3 col = col2 * (diffuse * (1.0 - ambient) + ambient);
+    vec3 col = baseCol * (diffuse * (1.0 - ambient) + ambient);
 
     outColor = vec4(col, 1.0);
 }

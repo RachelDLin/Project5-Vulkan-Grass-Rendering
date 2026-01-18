@@ -4,6 +4,14 @@
 #define WORKGROUP_SIZE 32
 layout(local_size_x = WORKGROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
 
+#define ENABLE_GRAVITY 1
+#define ENABLE_RECOVERY 1
+#define ENABLE_WIND 1
+
+#define ENABLE_ORIENTATION_CULLING 1
+#define ENABLE_VIEW_FRUSTUM_CULLING 1
+#define ENABLE_DISTANCE_CULLING 1
+
 layout(set = 0, binding = 0) uniform CameraBufferObject {
     mat4 view;
     mat4 proj;
@@ -47,6 +55,13 @@ bool inBounds(float value, float bounds) {
     return (value >= -bounds) && (value <= bounds);
 }
 
+bool inViewFrustum(vec3 pos) {
+	vec4 ndcPos = camera.proj * camera.view * vec4(pos.xyz, 1.0);
+	float tolerance = 0.9;
+	float homogCoord = ndcPos.w - tolerance;
+	return inBounds(ndcPos.x, homogCoord) && inBounds(ndcPos.y, homogCoord);
+}
+
 void main() {
 	uint idx = gl_GlobalInvocationID.x;
 
@@ -78,22 +93,28 @@ void main() {
 	
 	float stiffness = blade.up.w;
 	
-	// gravity: environmental gravity + front gravity to cause the top to bend
-	vec3 gE = vec3(0, -9.8, 0);
-	vec3 gF = 0.25 * length(gE) * fDir;
-	vec3 Fg = gE + gF;
+	#if ENABLE_GRAVITY
+		// gravity: environmental gravity + front gravity to cause the top to bend
+		vec3 gE = vec3(0, -9.8, 0);
+		vec3 gF = 0.25 * length(gE) * fDir;
+		vec3 Fg = gE + gF;
+	#endif
 
-	// recovery
-	vec3 pos2_initial;
-	vec3 Fr = (pos2_initial - pos2) * stiffness;
+	#if ENABLE_RECOVERY
+		// recovery
+		vec3 pos2_initial = pos0 + uDir * height;
+		vec3 Fr = (pos2_initial - pos2) * stiffness;
+	#endif 
 
-	// wind
-	vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) * sin(2.3 * totalTime) + 0.25 * sin(0.31 * totalTime + 0.87));
-	float windStrength = 3.0;
-	float dirAlignment = 1.0 - abs(dot(windDir, normalize(pos2 - pos0)));
-	float heightRatio = dot(pos2 - pos0, uDir) / height;
-	float alignment = heightRatio * dirAlignment;
-	vec3 Fw = windStrength * windDir * alignment;
+	#if ENABLE_WIND
+		// wind
+		vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) * sin(2.3 * totalTime) + 0.25 * sin(0.31 * totalTime + 0.87));
+		float windStrength = 3.0;
+		float dirAlignment = 1.0 - abs(dot(windDir, normalize(pos2 - pos0)));
+		float heightRatio = dot(pos2 - pos0, uDir) / height;
+		float alignment = heightRatio * dirAlignment;
+		vec3 Fw = windStrength * windDir * alignment;
+	#endif
 
 	// sum forces
 	vec3 F = Fg + Fr + Fw;
@@ -110,13 +131,13 @@ void main() {
 	// blade length
 	float L0 = length(pos1 - pos0);
 	float L1 = length(pos2 - pos1);
-	float n = 2.0;
-	float L = (2 * L0 + (n - 1.0) * L1) / (n + 1.0);
+	float numCtrlPts = 2.0;
+	float L = (2 * L0 + (numCtrlPts - 1.0) * L1) / (numCtrlPts + 1.0);
 
 	// height to length ratio
 	float r = height / L;
-	vec3 corrPos1 = pos0 + r * (pos1 - pos0);
-	vec3 corrPos2 = corrPos1 + r * (pos2 - pos1);
+	vec3 corrPos1 = pos0 + r * (newPos1 - pos0);
+	vec3 corrPos2 = corrPos1 + r * (newPos2 - newPos1);
 
 	// correct v1 and v2 positions
 	blade.v1.xyz = corrPos1;
@@ -129,19 +150,37 @@ void main() {
 	// Note: to do this, you will need to use an atomic operation to read and update numBlades.vertexCount
 	// You want to write the visible blades to the buffer without write conflicts between threads
 
-	// orientation culling
+	mat4 cam_invView = inverse(camera.view);
+	vec3 cam_F = vec3(cam_invView[2]);
 
+	#if ENABLE_ORIENTATION_CULLING
+		// orientation culling
+		if (abs(dot(cam_F, fDir)) > 0.9) {
+			return;
+		}
+	#endif
 
-	// view_frustum culling
+	#if ENABLE_VIEW_FRUSTUM_CULLING
+		// view_frustum culling
+		vec3 m = 0.25 * pos0 + 0.5 * pos1 + 0.25 * pos2;
+		if (!inViewFrustum(pos0) && !inViewFrustum(pos2) && !inViewFrustum(m)) {
+			return;
+		}
+	#endif
 
+	#if ENABLE_DISTANCE_CULLING
+		// distance 
+		vec3 cam_pos = vec3(cam_invView[3]);
+		float dProj = length(pos0 - cam_pos - uDir * dot(pos0 - cam_pos, uDir));
+		float dMax = 20.0; // culling distance
+		float lodLvl = 1;
+		if (mod(idx, lodLvl) > floor(lodLvl * (1.0 - dProj / dMax))) {
+			return;
+		}
+	#endif
 
-	// distance culling
-
-
-
-	// 
+	// copy unculled blades into culledBlades buffer
 	if (idx < (1 << 13)) {
-		Blade blade = inputBlades.blades[idx];
 		uint newIdx = atomicAdd(numBlades.vertexCount, 1);
 		culledBlades.blades[newIdx] = blade;
 	}

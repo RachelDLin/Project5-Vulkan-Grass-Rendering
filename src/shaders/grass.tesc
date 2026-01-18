@@ -28,9 +28,9 @@ void main() {
 
 	// TODO: Set level of tesselation
     gl_TessLevelInner[0] = 4; // 4 subdivisions along U-dir
-    gl_TessLevelInner[1] = 3; // 1 subdivision along V-dir
-    gl_TessLevelOuter[0] = 3; // 1 subdiv along bottom edge
+    gl_TessLevelInner[1] = 2; // 2 subdivision along V-dir
+    gl_TessLevelOuter[0] = 2; // 2 subdiv along bottom edge
     gl_TessLevelOuter[1] = 4; // 4 subdivs along right edge
-    gl_TessLevelOuter[2] = 2; // 1 subdiv along top edge
+    gl_TessLevelOuter[2] = 2; // 2 subdiv along top edge
     gl_TessLevelOuter[3] = 4; // 4 subdivs along left edge
 }
