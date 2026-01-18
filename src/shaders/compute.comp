@@ -92,28 +92,35 @@ void main() {
 	float width = blade.v2.w;
 	
 	float stiffness = blade.up.w;
+	vec3 Fg = vec3(0.0);
+	vec3 Fr = vec3(0.0);
+	vec3 Fw = vec3(0.0);
 	
 	#if ENABLE_GRAVITY
 		// gravity: environmental gravity + front gravity to cause the top to bend
 		vec3 gE = vec3(0, -9.8, 0);
 		vec3 gF = 0.25 * length(gE) * fDir;
-		vec3 Fg = gE + gF;
+		Fg = gE + gF;
 	#endif
 
 	#if ENABLE_RECOVERY
 		// recovery
 		vec3 pos2_initial = pos0 + uDir * height;
-		vec3 Fr = (pos2_initial - pos2) * stiffness;
+		Fr = (pos2_initial - pos2) * stiffness;
 	#endif 
 
 	#if ENABLE_WIND
 		// wind
-		vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) * sin(2.3 * totalTime) + 0.25 * sin(0.31 * totalTime + 0.87));
-		float windStrength = 3.0;
+		vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) + 
+								vec3(0.25) + 
+								vec3(0.53 * sin(2.3 * totalTime) + 0.27 * sin(5.7 * totalTime + 0.87), 
+										0, 
+										0.38 * sin(0.5 * totalTime) + 0.27 * sin(0.34 * totalTime + 0.13)));
+		float windStrength = 5.0;
 		float dirAlignment = 1.0 - abs(dot(windDir, normalize(pos2 - pos0)));
 		float heightRatio = dot(pos2 - pos0, uDir) / height;
 		float alignment = heightRatio * dirAlignment;
-		vec3 Fw = windStrength * windDir * alignment;
+		Fw = windStrength * windDir * alignment;
 	#endif
 
 	// sum forces
