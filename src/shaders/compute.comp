@@ -60,17 +60,70 @@ void main() {
 	barrier(); // Wait till all threads reach this point
 
     // TODO: Apply forces on every blade and update the vertices in the buffer
-	// gravity
-	// D.xyz = gravity direction
-	// D.w = acceleration due to gravity
-	// C = center of gravity (not necessary since our grass is on a flat plane)
-	// gE = normalize(D.xyz) * D.w * (1-t) + normalize(C.xyz) * C.w * t;
+
+	Blade blade = inputBlades.blades[idx];
+
+	// inputs
+	vec3 pos0 = blade.v0.xyz;
+	vec3 pos1 = blade.v1.xyz;
+	vec3 pos2 = blade.v2.xyz;
+
+	float dir = blade.v0.w;
+	vec3 rDir = normalize(vec3(cos(dir), 0, sin(dir)));
+	vec3 uDir = normalize(blade.up.xyz);
+	vec3 fDir = normalize(cross(rDir, uDir));
+	
+	float height = blade.v1.w;
+	float width = blade.v2.w;
+	
+	float stiffness = blade.up.w;
+	
+	// gravity: environmental gravity + front gravity to cause the top to bend
+	vec3 gE = vec3(0, -9.8, 0);
+	vec3 gF = 0.25 * length(gE) * fDir;
+	vec3 Fg = gE + gF;
 
 	// recovery
+	vec3 pos2_initial;
+	vec3 Fr = (pos2_initial - pos2) * stiffness;
 
 	// wind
+	vec3 windDir = normalize(vec3(1.0, -0.25, 1.0) * sin(2.3 * totalTime) + 0.25 * sin(0.31 * totalTime + 0.87));
+	float windStrength = 3.0;
+	float dirAlignment = 1.0 - abs(dot(windDir, normalize(pos2 - pos0)));
+	float heightRatio = dot(pos2 - pos0, uDir) / height;
+	float alignment = heightRatio * dirAlignment;
+	vec3 Fw = windStrength * windDir * alignment;
 
+	// sum forces
+	vec3 F = Fg + Fr + Fw;
 
+	///// apply force to blade
+
+	// new v2 pos
+	vec3 newPos2 = deltaTime * F + pos2;
+	
+	// new v1 pos
+	float lProj = length(pos2 - pos0 - uDir * dot(pos2 - pos0, uDir));
+	vec3 newPos1 = pos0 + height * uDir * max(1.0 - (lProj / h), 0.05 * max(lProj / height, 1));
+
+	// blade length
+	float L0 = length(pos1 - pos0);
+	float L1 = length(pos2 - pos1);
+	float n = 2.0;
+	float L = (2 * L0 + (n - 1.0) * L1) / (n + 1.0);
+
+	// height to length ratio
+	float r = height / L;
+	vec3 corrPos1 = pos0 + r * (pos1 - pos0);
+	vec3 corrPos2 = corrPos1 + r * (pos2 - pos1);
+
+	// correct v1 and v2 positions
+	blade.v1.xyz = corrPos1;
+	blade.v2.xyz = corrPos2;
+
+	inputBlades[idx] = blade;
+	
 	// TODO: Cull blades that are too far away or not in the camera frustum and write them
 	// to the culled blades buffer
 	// Note: to do this, you will need to use an atomic operation to read and update numBlades.vertexCount
