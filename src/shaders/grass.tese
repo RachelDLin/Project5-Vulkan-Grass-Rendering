@@ -40,7 +40,8 @@ void main() {
                     v * v * pos2;
 
     // width offset
-    vec3 bladePos = curvePos + (u - 0.5) * width * rDir;
+    float interpolatedWidth = (1.0 - v) * width;
+    vec3 bladePos = curvePos + (u - 0.5) * interpolatedWidth * rDir;
 
     // normal
     vec3 tangent = normalize(pos2 - pos0);
