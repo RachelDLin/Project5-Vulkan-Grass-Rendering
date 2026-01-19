@@ -9,7 +9,7 @@
 #include "BufferUtils.h"
 
 Camera::Camera(Device* device, float aspectRatio) : device(device) {
-    r = 10.0f;
+    r = 25.0f;
     theta = 0.0f;
     phi = 0.0f;
     cameraBufferObject.viewMatrix = glm::lookAt(glm::vec3(0.0f, 1.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
