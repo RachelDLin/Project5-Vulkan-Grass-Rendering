@@ -91,6 +91,14 @@ Blades that are too far to require rendering of individual blades as geometry ar
 
 ### Performance
 
+At a closer distance, distance culling is minimal because all blades in the patch in the patch of grass in the test scene are too close to the camera to be culled. At a farther distance, we observe a greater improvement from distance culling.
+
+With view-frustum culling, this idea is flipped. At a closer distance, blades outside of the screen are culled, whereas at a farther distance, most blades are within the field of view and are not culled.
+
+We see a more consistent trend with orientation culling, as the proportion of blades that are aligned with the look direction will not change with camera distance.
+
+We also observe a performance dip with culling in the 0-2000 range of blades. This is likely because the compute cost of culling outweighs the performance gains. Since there are not many blades to begin with, the number of blades culled (and the cost savings in the rendering step) is not worth it for the extra calculation in the compute step. However, we see a much greater payoff with all culling methods as the number of blades of grass increases. In practice, a video game would likely have a large field of grass rather than just a small patch, so all three culling methods could be very applicable depending on the scene.
+
 <img src="img/FPS vs. Culling Method near.png" width="50%">
 
 <img src="img/FPS vs. Culling Method far.png" width="50%">
