@@ -91,8 +91,8 @@ Blades that are too far to require rendering of individual blades as geometry ar
 
 ### Performance
 
-<img src="img/FPS vs. Culling Method near.png" width="100%">
+<img src="img/FPS vs. Culling Method near.png" width="50%">
 
-<img src="img/FPS vs. Culling Method far.png" width="100%">
+<img src="img/FPS vs. Culling Method far.png" width="50%">
 
 
