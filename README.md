@@ -32,6 +32,8 @@ Tested on: Windows 11, 12th Gen Intel(R) Core(TM) i7-12700H @ 2.30GHz, NVIDIA Ge
 
 This project is an implementation of the paper [Responsive Real-Time Grass Rendering for General 3D Scenes](https://www.cg.tuwien.ac.at/research/publications/2017/JAHRMANN-2017-RRTG/JAHRMANN-2017-RRTG-draft.pdf) by Klemens Jahrmann and Michael Wimmer on the GPU. A compute pipeline is used for calculating forces and determining culling for each blade before the graphics pipeline renders out the scene.
 
+<img src="img/blade_model.png" width="100%">
+
 # Features
 
 ## Forces
