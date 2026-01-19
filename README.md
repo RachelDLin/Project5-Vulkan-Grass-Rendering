@@ -34,6 +34,8 @@ This project is an implementation of the paper [Responsive Real-Time Grass Rende
 
 # Data Representation
 
+<img src="img/blade_model.jpg" width="50%">
+
 Grass blades are represented as 2nd-degree bezier curves (three control points). Data for each blade is stored as follows:
 * `v0.xyz`: the position of control point 0 (the bottom endpoint)
 * `v0.w`: the orientation of the blade
@@ -43,8 +45,6 @@ Grass blades are represented as 2nd-degree bezier curves (three control points).
 * `v2.w`: the width of the base of the grass blade
 * `up.xyz`: the "up" direction of the blade
 * `up.w`: the stiffness of the blade
-
-<img src="img/blade_model.jpg" width="50%">
 
 # Features
 
