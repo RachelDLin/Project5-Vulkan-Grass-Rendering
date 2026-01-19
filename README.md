@@ -41,6 +41,8 @@ Grass blades are represented as 2nd-degree bezier curves (three control points).
 * `v1.w`: the height of the grass blade
 * `v2.xyz`: the position of control point 2 (the top endpoint)
 * `v2.w`: the width of the base of the grass blade
+* `up.xyz`: the "up" direction of the blade
+* `up.w`: the stiffness of the blade
 
 <img src="img/blade_model.jpg" width="50%">
 
@@ -77,11 +79,15 @@ The wind is represented by a direction and strength, which are computed procedur
 
 ### Orientation Culling
 
-
+Blades that do not align with the view vector are culled. Culling is determined through a simple check using a dot product: `dot(cameraDirection, bladeDirection) < 0.9`.
 
 ### View-Frustum Culling
 
+Blades that are outside of the view frustum of the camera don't need to be drawn because they are outside of the view of the screen. This is done by mapping world coordinates to normalized device coordinates. Any blades that are outside of the range `[-1.0, 1.0]` are culled, preventing expensive rendering calculations in the graphics pipeline.
+
 ### Distance Culling
+
+Blades that are too far to require rendering of individual blades as geometry are culled. In practice, these should be replaced by grass billboards.
 
 ### Performance
 
